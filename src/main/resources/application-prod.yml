@@ -7,9 +7,9 @@ spring:
   application:
     name: ${APPLICATION_NAME:ignite-payment-service}
   datasource:
-    url: jdbc:mysql://db_instance_address:db_instance_port/ignite_payment_db?createDatabaseIfNotExist=true
-    username: ${DB_USERNAME:db_instance_username}
-    password: ${DB_PASSWORD:db_instance_password}
+    url: jdbc:mysql://ignite-db.cf3zfdqdzdpj.us-east-1.rds.amazonaws.com:3306/ignite_payment_db?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:nawaz_admin}
     driver-class-name: com.mysql.cj.jdbc.Driver
     initialization-mode: always
   jpa:
@@ -23,16 +23,9 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL:eureka_server_address/eureka}
-
-## cors configuration
-accessControl:
-  allowedOrigins: ${ALLOWED_ORIGINS:*}
-  allowedMethods: ${ALLOWED_METHODS:GET, POST, PUT, PATCH, DELETE, OPTIONS}
-  maxAge: ${MAX_AGE:3600}
-  allowedHeaders: ${ALLOWED_HEADERS:*}
+      defaultZone: ${EUREKA_SERVER_URL:http://ignitediscovery-env.eba-77absjbd.us-east-1.elasticbeanstalk.com/eureka}
 
 ## Registration-Microservice
 registration:
-  baseUrl: ${REGISTRATION_BASE_URL:registration_service_address}
+  baseUrl: ${REGISTRATION_BASE_URL:http://igniteregistration-env-1.eba-rggue2hh.us-east-1.elasticbeanstalk.com}
   studentInfoUrl: /api/v1/student/get/{studentId}
