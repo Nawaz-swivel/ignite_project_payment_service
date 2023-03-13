@@ -1,4 +1,4 @@
-## Ignite Registration
+## Ignite Payment
 
 This is the payment Microservice of the Ignite Project Backend.
 
