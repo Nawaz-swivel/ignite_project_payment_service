@@ -13,7 +13,7 @@ public enum ErrorResponseStatusType {
     INVALID_PAYMENT_MONTH(4003, "Invalid payment month"),
     PAYMENT_ALREADY_MADE(4004, "Payment to the given details have been made already"),
     INTERNAL_SERVER_ERROR(5000, "Internal Server Error"),
-    REGISTRATION_INTERNAL_SERVER_ERROR(5001, "Registration Service - Internal Server Error");
+    STUDENT_INTERNAL_SERVER_ERROR(5001, "Student Service - Internal Server Error");
 
     private final int code;
     private final String message;

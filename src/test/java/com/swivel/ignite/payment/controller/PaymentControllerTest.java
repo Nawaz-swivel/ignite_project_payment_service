@@ -8,7 +8,7 @@ import com.swivel.ignite.payment.enums.Month;
 import com.swivel.ignite.payment.enums.SuccessResponseStatusType;
 import com.swivel.ignite.payment.exception.*;
 import com.swivel.ignite.payment.service.PaymentService;
-import com.swivel.ignite.payment.service.RegistrationService;
+import com.swivel.ignite.payment.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -44,7 +44,7 @@ class PaymentControllerTest {
     private static final String SUCCESS_MESSAGE = "Successfully returned the data.";
     private static final String ERROR_MESSAGE = "Oops!! Something went wrong. Please try again.";
     private static final String ERROR = "ERROR";
-    private static final String MAKE_TUITION_PAYMENT_URI = "/api/v1/payment/create";
+    private static final String MAKE_TUITION_PAYMENT_URI = "/api/v1/payment/make";
     private static final String GET_ALL_PAYMENT_BY_TUITION_ID_AND_MONTH_URI = "/api/v1/payment/get/all/{tuitionId}/{month}";
     private static final String DELETE_ALL_BY_TUITION_ID_URI = "/api/v1/payment/delete/all/tuition/{tuitionId}";
     private static final String DELETE_ALL_BY_STUDENT_ID_URI = "/api/v1/payment/delete/all/student/{studentId}";
@@ -52,22 +52,22 @@ class PaymentControllerTest {
     @Mock
     private PaymentService paymentService;
     @Mock
-    private RegistrationService registrationService;
+    private StudentService studentService;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        PaymentController paymentController = new PaymentController(paymentService, registrationService);
+        PaymentController paymentController = new PaymentController(paymentService, studentService);
         mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
     }
 
     /**
      * Start of tests for make tuition payment
-     * Api context: /api/v1/payment/create
+     * Api context: /api/v1/payment/make
      */
     @Test
     void Should_ReturnOk_When_MakingTuitionPaymentIsSuccessful() throws Exception {
-        when(registrationService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
+        when(studentService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
         when(paymentService.makeTuitionPayment(any(PaymentCreateRequestDto.class), any(StudentResponseDto.class)))
                 .thenReturn(getSamplePayment());
 
@@ -103,7 +103,7 @@ class PaymentControllerTest {
 
     @Test
     void Should_ReturnBadRequest_When_MakingTuitionPaymentForStudentNotEnrolledInTuition() throws Exception {
-        when(registrationService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
+        when(studentService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
         when(paymentService.makeTuitionPayment(any(PaymentCreateRequestDto.class), any(StudentResponseDto.class)))
                 .thenThrow(new StudentNotEnrolledInTuitionException(ERROR));
 
@@ -122,7 +122,7 @@ class PaymentControllerTest {
 
     @Test
     void Should_ReturnBadRequest_When_MakingTuitionPaymentForPaymentMonthInvalid() throws Exception {
-        when(registrationService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
+        when(studentService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
         when(paymentService.makeTuitionPayment(any(PaymentCreateRequestDto.class), any(StudentResponseDto.class)))
                 .thenThrow(new PaymentMonthInvalidException(ERROR));
 
@@ -141,7 +141,7 @@ class PaymentControllerTest {
 
     @Test
     void Should_ReturnBadRequest_When_MakingTuitionPaymentForPaymentAlreadyMade() throws Exception {
-        when(registrationService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
+        when(studentService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
         when(paymentService.makeTuitionPayment(any(PaymentCreateRequestDto.class), any(StudentResponseDto.class)))
                 .thenThrow(new PaymentAlreadyMadeException(ERROR));
 
@@ -159,10 +159,10 @@ class PaymentControllerTest {
     }
 
     @Test
-    void Should_ReturnInternalServerError_When_MakingTuitionPaymentForRegistrationMicroserviceCallFailed()
+    void Should_ReturnInternalServerError_When_MakingTuitionPaymentForStudentMicroserviceCallFailed()
             throws Exception {
-        when(registrationService.getStudentInfo(anyString()))
-                .thenThrow(new RegistrationServiceHttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR));
+        when(studentService.getStudentInfo(anyString()))
+                .thenThrow(new StudentServiceHttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR));
 
         mockMvc.perform(MockMvcRequestBuilders.post(MAKE_TUITION_PAYMENT_URI)
                         .content(getSamplePaymentCreateRequestDto().toJson())
@@ -171,15 +171,15 @@ class PaymentControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.status").value(ERROR_STATUS))
                 .andExpect(jsonPath("$.message").value(ErrorResponseStatusType
-                        .REGISTRATION_INTERNAL_SERVER_ERROR.getMessage()))
+                        .STUDENT_INTERNAL_SERVER_ERROR.getMessage()))
                 .andExpect(jsonPath("$.errorCode").value(ErrorResponseStatusType
-                        .REGISTRATION_INTERNAL_SERVER_ERROR.getCode()))
+                        .STUDENT_INTERNAL_SERVER_ERROR.getCode()))
                 .andExpect(jsonPath("$.displayMessage").value(ERROR_MESSAGE));
     }
 
     @Test
     void Should_ReturnInternalServerError_When_MakingTuitionPaymentIsFailed() throws Exception {
-        when(registrationService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
+        when(studentService.getStudentInfo(anyString())).thenReturn(getSampleStudentResponseDto());
         when(paymentService.makeTuitionPayment(any(PaymentCreateRequestDto.class), any(StudentResponseDto.class)))
                 .thenThrow(new PaymentServiceException(ERROR));
 

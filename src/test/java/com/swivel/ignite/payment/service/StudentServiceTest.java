@@ -1,7 +1,7 @@
 package com.swivel.ignite.payment.service;
 
 import com.swivel.ignite.payment.dto.response.StudentResponseDto;
-import com.swivel.ignite.payment.exception.RegistrationServiceHttpClientErrorException;
+import com.swivel.ignite.payment.exception.StudentServiceHttpClientErrorException;
 import com.swivel.ignite.payment.wrapper.StudentResponseWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,25 +17,26 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
- * This class tests {@link RegistrationService} class
+ * This class tests {@link StudentService} class
  */
-class RegistrationServiceTest {
+class StudentServiceTest {
 
     private static final String STUDENT_ID = "sid-123456789";
-    private static final String BASE_URL = "http://localhost:8082/ignite-registration-service";
+    private static final String BASE_URL = "http://localhost:8080/ignite-student-service";
     private static final String STUDENT_INFO_URL = "/api/v1/student/get/{studentId}";
+    private StudentService studentService;
     @Mock
     private RestTemplate restTemplate;
-    private RegistrationService registrationService;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        registrationService = new RegistrationService(BASE_URL, STUDENT_INFO_URL, restTemplate);
+        studentService = new StudentService(BASE_URL, STUDENT_INFO_URL, restTemplate);
     }
 
     /**
@@ -45,15 +46,15 @@ class RegistrationServiceTest {
     void Should_ReturnStudentResponseDto_When_GettingStudentInfoIsSuccessful() throws IOException {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class),
                 anyMap())).thenReturn(getSampleResponseEntity());
-        assertEquals(STUDENT_ID, registrationService.getStudentInfo(STUDENT_ID).getStudentId());
+        assertEquals(STUDENT_ID, studentService.getStudentInfo(STUDENT_ID).getStudentId());
     }
 
     @Test
-    void Should_ThrowRegistrationServiceHttpClientErrorException_When_GettingStudentInfoIsFailed() {
+    void Should_ThrowStudentServiceHttpClientErrorException_When_GettingStudentInfoIsFailed() {
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class),
                 anyMap())).thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
-        RegistrationServiceHttpClientErrorException exception =
-                assertThrows(RegistrationServiceHttpClientErrorException.class, () -> registrationService
+        StudentServiceHttpClientErrorException exception =
+                assertThrows(StudentServiceHttpClientErrorException.class, () -> studentService
                         .getStudentInfo(STUDENT_ID));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value() + " Failed to get student info",
                 exception.getMessage());

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
  */
 public class Controller {
 
+    protected static final String AUTH_HEADER = "Authorization";
     private static final String ERROR_MESSAGE = "Oops!! Something went wrong. Please try again.";
     private static final String SUCCESS_MESSAGE = "Successfully returned the data.";
 

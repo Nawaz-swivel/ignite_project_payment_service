@@ -10,7 +10,7 @@ import com.swivel.ignite.payment.enums.Month;
 import com.swivel.ignite.payment.enums.SuccessResponseStatusType;
 import com.swivel.ignite.payment.exception.*;
 import com.swivel.ignite.payment.service.PaymentService;
-import com.swivel.ignite.payment.service.RegistrationService;
+import com.swivel.ignite.payment.service.StudentService;
 import com.swivel.ignite.payment.wrapper.ResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,12 +31,12 @@ import java.util.List;
 public class PaymentController extends Controller {
 
     private final PaymentService paymentService;
-    private final RegistrationService registrationService;
+    private final StudentService studentService;
 
     @Autowired
-    public PaymentController(PaymentService paymentService, RegistrationService registrationService) {
+    public PaymentController(PaymentService paymentService, StudentService studentService) {
         this.paymentService = paymentService;
-        this.registrationService = registrationService;
+        this.studentService = studentService;
     }
 
     /**
@@ -44,15 +45,17 @@ public class PaymentController extends Controller {
      * @param requestDto payment create request dto
      * @return success/ error response
      */
-    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+    @PostMapping(path = "/make", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseWrapper> makeTuitionPayment(@RequestBody PaymentCreateRequestDto requestDto) {
+    public ResponseEntity<ResponseWrapper> makeTuitionPayment(@RequestBody PaymentCreateRequestDto requestDto,
+                                                              HttpServletRequest request) {
+        String token = request.getHeader(AUTH_HEADER);
         try {
             if (!requestDto.isRequiredAvailable()) {
                 log.error("Required fields missing in payment create request DTO for make tuition payment");
                 return getBadRequestResponse(ErrorResponseStatusType.MISSING_REQUIRED_FIELDS);
             }
-            StudentResponseDto studentResponseDto = registrationService.getStudentInfo(requestDto.getStudentId());
+            StudentResponseDto studentResponseDto = studentService.getStudentInfo(requestDto.getStudentId(), token);
             Payment payment = paymentService.makeTuitionPayment(requestDto, studentResponseDto);
             log.debug("Made payment for studentId: {}, tuitionId: {}", requestDto.getStudentId(), requestDto
                     .getTuitionId());
@@ -68,9 +71,9 @@ public class PaymentController extends Controller {
         } catch (PaymentAlreadyMadeException e) {
             log.error("Payment is already made", e);
             return getBadRequestResponse(ErrorResponseStatusType.PAYMENT_ALREADY_MADE);
-        } catch (RegistrationServiceHttpClientErrorException e) {
+        } catch (StudentServiceHttpClientErrorException e) {
             log.error("Failed to get student info from Registration Micro Service.", e);
-            return getInternalServerErrorResponse(ErrorResponseStatusType.REGISTRATION_INTERNAL_SERVER_ERROR,
+            return getInternalServerErrorResponse(ErrorResponseStatusType.STUDENT_INTERNAL_SERVER_ERROR,
                     e.responseBody);
         } catch (PaymentServiceException | IOException e) {
             log.error("Making tuition payment was failed for requestDto: {}", requestDto.toLogJson(), e);

@@ -10,19 +10,19 @@ import java.io.IOException;
 /**
  * Registration Microservice client error exception
  */
-public class RegistrationServiceHttpClientErrorException extends HttpClientErrorException {
+public class StudentServiceHttpClientErrorException extends HttpClientErrorException {
 
     public final transient JsonNode responseBody;
     public final Exception exception;
 
-    public RegistrationServiceHttpClientErrorException(HttpStatus statusCode, String statusText, String responseBody,
-                                                       Exception e) throws IOException {
+    public StudentServiceHttpClientErrorException(HttpStatus statusCode, String statusText, String responseBody,
+                                                  Exception e) throws IOException {
         super(statusCode, statusText);
         this.responseBody = getJsonObject(responseBody);
         this.exception = e;
     }
 
-    public RegistrationServiceHttpClientErrorException(HttpStatus status, String message) {
+    public StudentServiceHttpClientErrorException(HttpStatus status, String message) {
         super(status, message);
         this.responseBody = null;
         this.exception = null;

@@ -1,7 +1,7 @@
 package com.swivel.ignite.payment.service;
 
 import com.swivel.ignite.payment.dto.response.StudentResponseDto;
-import com.swivel.ignite.payment.exception.RegistrationServiceHttpClientErrorException;
+import com.swivel.ignite.payment.exception.StudentServiceHttpClientErrorException;
 import com.swivel.ignite.payment.wrapper.StudentResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,19 +21,20 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Registration Microservice
+ * Student Microservice
  */
 @Slf4j
 @Service
-public class RegistrationService {
+public class StudentService {
 
+    private static final String AUTH_HEADER = "Authorization";
     private static final String FAILED_TO_GET_STUDENT_INFO = "Failed to get student info";
     private final RestTemplate restTemplate;
     private final String getStudentInfoUrl;
 
-    public RegistrationService(@Value("${registration.baseUrl}") String baseUrl,
-                               @Value("${registration.studentInfoUrl}") String studentInfoUrl,
-                               RestTemplate restTemplate) {
+    public StudentService(@Value("${student.baseUrl}") String baseUrl,
+                          @Value("${student.studentInfoUrl}") String studentInfoUrl,
+                          RestTemplate restTemplate) {
         this.getStudentInfoUrl = baseUrl + studentInfoUrl;
         this.restTemplate = restTemplate;
     }
@@ -45,16 +46,15 @@ public class RegistrationService {
      * @return student response dto
      * @throws IOException
      */
-    public StudentResponseDto getStudentInfo(String studentId) throws IOException {
+    public StudentResponseDto getStudentInfo(String studentId, String token) throws IOException {
         Map<String, String> uriParam = new HashMap<>();
         uriParam.put("studentId", studentId);
-
         UriComponents builder = UriComponentsBuilder.fromHttpUrl(getStudentInfoUrl).build();
-
         HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTH_HEADER, token);
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         try {
-            log.debug("Calling registration service to get student info. url: {},", getStudentInfoUrl);
+            log.debug("Calling student service to get student info. url: {},", getStudentInfoUrl);
             ResponseEntity<StudentResponseWrapper> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
                     entity, StudentResponseWrapper.class, uriParam);
             String responseBody = Objects.requireNonNull(result.getBody()).getData().toLogJson();
@@ -62,7 +62,7 @@ public class RegistrationService {
                     result.getStatusCode(), responseBody);
             return Objects.requireNonNull(result.getBody()).getData();
         } catch (HttpClientErrorException e) {
-            throw new RegistrationServiceHttpClientErrorException(e.getStatusCode(), FAILED_TO_GET_STUDENT_INFO,
+            throw new StudentServiceHttpClientErrorException(e.getStatusCode(), FAILED_TO_GET_STUDENT_INFO,
                     e.getResponseBodyAsString(), e);
         }
     }
