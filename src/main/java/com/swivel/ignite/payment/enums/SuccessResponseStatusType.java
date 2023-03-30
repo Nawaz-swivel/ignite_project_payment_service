@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public enum SuccessResponseStatusType {
 
-    MADE_PAYMENT(2000, "Successfully made the payment"),
-    READ_PAYMENT(2001, "Successfully read the payment"),
-    DELETE_PAYMENT(2002, "Successfully deleted the payment");
+    MADE_PAYMENT(200, "Successfully made the payment"),
+    READ_PAYMENT(200, "Successfully read the payment"),
+    DELETE_PAYMENT(202, "Successfully deleted the payment");
 
     private final int code;
     private final String message;

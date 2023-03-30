@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 public enum ErrorResponseStatusType {
 
-    MISSING_REQUIRED_FIELDS(4001, "Missing required fields"),
-    STUDENT_NOT_ENROLLED_IN_TUITION(4002, "Student not enrolled in tuition"),
-    INVALID_PAYMENT_MONTH(4003, "Invalid payment month"),
-    PAYMENT_ALREADY_MADE(4004, "Payment to the given details have been made already"),
-    INTERNAL_SERVER_ERROR(5000, "Internal Server Error"),
-    STUDENT_INTERNAL_SERVER_ERROR(5001, "Student Service - Internal Server Error");
+    MISSING_REQUIRED_FIELDS(400, "Missing required fields"),
+    STUDENT_NOT_ENROLLED_IN_TUITION(400, "Student not enrolled in tuition"),
+    INVALID_PAYMENT_MONTH(400, "Invalid payment month"),
+    PAYMENT_ALREADY_MADE(400, "Payment to the given details have been made already"),
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+    STUDENT_INTERNAL_SERVER_ERROR(500, "Student Service - Internal Server Error");
 
     private final int code;
     private final String message;

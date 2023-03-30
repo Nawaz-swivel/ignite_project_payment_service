@@ -8,7 +8,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.io.IOException;
 
 /**
- * Registration Microservice client error exception
+ * Student Microservice client error exception
  */
 public class StudentServiceHttpClientErrorException extends HttpClientErrorException {
 
