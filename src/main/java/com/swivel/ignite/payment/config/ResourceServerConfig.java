@@ -17,11 +17,11 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     private static final String PAYMENT_ENDPOINT = "/api/v1/payment/**";
-    private final String RESOURCE_ID;
+    private final String resourceId;
 
     @Autowired
     public ResourceServerConfig(@Value("${oauth.resource-id}") String resourceId) {
-        this.RESOURCE_ID = resourceId;
+        this.resourceId = resourceId;
     }
 
     /**
@@ -31,7 +31,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
      */
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
-        resources.resourceId(RESOURCE_ID);
+        resources.resourceId(resourceId);
         resources.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
         resources.accessDeniedHandler(new CustomAccessDeniedHandler());
     }
@@ -48,6 +48,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, PAYMENT_ENDPOINT).access("hasAnyAuthority('STUDENT')")
                 .antMatchers(HttpMethod.GET, PAYMENT_ENDPOINT).access("hasAnyAuthority('ADMIN', 'STUDENT')")
                 .antMatchers(HttpMethod.DELETE, PAYMENT_ENDPOINT).access("hasAuthority('ADMIN')")
+                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
+                        "/configuration/**", "/swagger-ui.html", "/webjars/**").permitAll()
                 .anyRequest().authenticated().and().cors().and()
                 .csrf().disable();
     }
