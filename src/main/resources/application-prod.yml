@@ -23,13 +23,13 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://3.92.197.186:8761/eureka}
+      defaultZone: ${EUREKA_SERVER_URL:http://3.90.11.49:8761/eureka}
 
 # oauth2 security configuration
 security:
   oauth2:
     resource:
-      token-info-uri: http://54.196.27.106:8080/ignite-auth-service/oauth/check_token
+      token-info-uri: http://34.224.17.45:8080/ignite-auth-service/oauth/check_token
     client:
       client-id: ignite-client
       client-secret: 1234
@@ -47,5 +47,5 @@ logging:
 
 ## Student-Microservice
 student:
-  baseUrl: ${STUDENT_BASE_URL:http://54.196.27.106:8080/ignite-student-service}
+  baseUrl: ${STUDENT_BASE_URL:http://34.224.17.45:8080/ignite-student-service}
   studentInfoUrl: /api/v1/student/get/{studentId}
