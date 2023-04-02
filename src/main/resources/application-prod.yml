@@ -7,7 +7,7 @@ spring:
   application:
     name: ${APPLICATION_NAME:ignite-payment-service}
   datasource:
-    url: jdbc:mysql://107.23.77.51:3306/ignite_payment_db?createDatabaseIfNotExist=true
+    url: jdbc:mysql://34.205.4.223:3306/ignite_payment_db?createDatabaseIfNotExist=true
     username: ${DB_USERNAME:user}
     password: ${DB_PASSWORD:user}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,13 +23,13 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://3.90.11.49:8761/eureka}
+      defaultZone: ${EUREKA_SERVER_URL:http://18.212.198.116:8761/eureka}
 
 # oauth2 security configuration
 security:
   oauth2:
     resource:
-      token-info-uri: http://34.224.17.45:8080/ignite-auth-service/oauth/check_token
+      token-info-uri: http://100.27.14.135:8080/ignite-auth-service/oauth/check_token
     client:
       client-id: ignite-client
       client-secret: 1234
@@ -47,5 +47,5 @@ logging:
 
 ## Student-Microservice
 student:
-  baseUrl: ${STUDENT_BASE_URL:http://34.224.17.45:8080/ignite-student-service}
+  baseUrl: ${STUDENT_BASE_URL:http://100.27.14.135:8080/ignite-student-service}
   studentInfoUrl: /api/v1/student/get/{studentId}
