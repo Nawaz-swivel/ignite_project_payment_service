@@ -341,9 +341,7 @@ class PaymentControllerTest {
      * @throws ParseException
      */
     private StudentResponseDto getSampleStudentResponseDto() throws ParseException {
-        StudentResponseDto responseDto = new StudentResponseDto();
-        responseDto.setTuitionId(TUITION_ID);
-        responseDto.setTuitionJoinedOn(new Date(DATE_JANUARY));
+        StudentResponseDto responseDto = new StudentResponseDto(STUDENT_ID, TUITION_ID, new Date(DATE_JANUARY));
         return responseDto;
     }
 
